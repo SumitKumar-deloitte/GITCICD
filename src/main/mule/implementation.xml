@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="contentType" doc:id="74557ea5-cba8-41fc-9fa4-d197a263a5d7" >
+		<logger level="INFO" doc:name="Logger" doc:id="972fc698-5912-472d-a40c-5d84153299a8" message='#[attributes.headers."content-type"]'/>
+		<set-variable value='#[attributes.headers."content-type"]' doc:name="Set Variable" doc:id="9ae8b565-aa90-490f-8039-19a736601566" variableName="contentType"/>
+		<choice doc:name="Choice" doc:id="deadeac5-b99a-4301-9582-ccbd23007aba" >
+			<when expression='#[vars.contentType=="application/json"]'>
+				<set-payload value="Content type is JSON" doc:name="Set Payload" doc:id="965f78bd-6773-4dbe-b777-ba440a08fefc" />
+			</when>
+			<when expression='#[vars.contentType=="application/xml"]'>
+				<set-payload value="Content type is XML" doc:name="Set Payload" doc:id="df42ae3f-5e2a-4ba2-bed5-353c4a03d4f9" />
+			</when>
+			<when expression='#[vars.contentType=="text/plain"]'>
+				<set-payload value="Content type is plain text" doc:name="Set Payload" doc:id="1da1d6e0-c4bd-4633-b6e1-af4b7dcf02c9" />
+			</when>
+			<otherwise >
+				<set-payload value="#[typeOf(payload)]" doc:name="Set Payload" doc:id="dbb98878-3499-424b-b2c1-3b23ae7001fc" />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="SyncFlow" doc:id="7537ef49-3795-4197-b6a8-d7c3887d6852" >
+		<ee:transform doc:name="Sync Transform" doc:id="dbf267fe-95dc-47ed-8c5e-f6c961357992">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+import * from dw::core::Strings
+---
+{
+    "fullName" : capitalize(payload.firstName)++ " "++ capitalize(payload.lastName)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-payload value="#[payload]" doc:name="Sync Payload" doc:id="4535b948-0d06-4091-ba77-6dfefc46a2c3" />
+		<logger level="INFO" doc:name="Logger" doc:id="53e9622e-5c14-45fc-a5de-4a57b833cc90" message="#[payload]"/>
+	</flow>
+	<flow name="AsyncFlow" doc:id="fcc53aaf-5755-42df-90cf-5c83ef8c69a5" >
+		<ee:transform doc:name="Async Transform" doc:id="7b6bd0ec-dc20-47c4-a00d-f79d8c85a366" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+import * from dw::core::Strings
+---
+{
+    "fullName" : capitalize(payload.firstName)++ " "++ capitalize(payload.lastName)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-payload value="#[payload]" doc:name="Async Payload" doc:id="bed634f4-0dc2-4a27-a3c3-58fb9427beb7" />
+		<logger level="INFO" doc:name="Logger" doc:id="9f9de12d-1d72-4a17-a139-f085233926ab" message="#[payload]"/>
+	</flow>
+</mule>

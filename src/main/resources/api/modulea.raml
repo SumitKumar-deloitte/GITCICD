@@ -1,0 +1,40 @@
+#%RAML 1.0
+title: moduleA
+
+/postSync:
+  post:
+    description: Posting data & getting response using synchronous process
+    displayName: Synchronous Process
+    body:
+      application/json:
+        example: !include examples/nameInput.json
+    responses:
+      200:
+        body:
+          application/json:
+            example : !include examples/nameOutput.json
+
+/postAsync:
+    post:
+      description: Posting data & getting response using asynchronous process
+      displayName: Asynchronous Process
+      body:
+        application/json:
+          example: !include examples/nameInput.json
+      responses:
+        200:
+          body:
+            application/json:
+              example : !include examples/nameInput.json
+
+/getContentType:
+  get:
+    description: getting response based on the type of data posted
+    displayName: Get Response Type
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/contentType.json
+            
+      
