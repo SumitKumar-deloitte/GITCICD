@@ -1,0 +1,4 @@
+http:
+ path: "/api/*"
+ port: "8082"
+ timeout: "30000"
